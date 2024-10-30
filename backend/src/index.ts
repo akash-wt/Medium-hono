@@ -16,20 +16,22 @@ app.post("/api/v1/signup", async (c) => {
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    // @ts-ignore
-    const body = await c.req.parseBody();
+    const body = await c.req.json();
+
+    if (!body.name || !body.email || !body.password) {
+      return c.json({ msg: "Invalid input data" }, 400);
+    }
 
     const user = await prisma.user.create({
-      data: { // @ts-ignore
-        name: body.name, // @ts-ignore
-        email: body.email, // @ts-ignore
+      data: {
+        name: body.name,
+        email: body.email,
         password: body.password,
       },
     });
 
-
-    const token = await sign({ id:user.id}, c.env.JWT_SECRET);
-console.log(token);
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+    console.log(token);
 
     return c.json({
       jwt: token,
