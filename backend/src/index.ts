@@ -10,6 +10,24 @@ const app = new Hono<{
   };
 }>();
 
+app.use("/api/v1/blog/*", async (c, next) => {
+  try {
+    const authHeader = c.req.header("Authorization") || " ";
+    const token=authHeader.split(" ")[1]; 
+    const isVerified = await verify(token, c.env.JWT_SECRET);
+    if (isVerified) {
+      await next();
+    } else {
+      throw Error;
+    }
+  } catch (e) {
+    return c.json({
+      msg: "unauthorized, verfication failed!",
+      error: e,
+    },401);
+  }
+});
+
 app.post("/api/v1/signup", async (c) => {
   try {
     const prisma = new PrismaClient({
@@ -47,8 +65,43 @@ app.post("/api/v1/signup", async (c) => {
   }
 });
 
-app.post("/api/v1/user/signin", (c) => {
-  return c.text("signin");
+app.post("/api/v1/user/signin", async (c) => {
+  try {
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const body = await c.req.json();
+
+    if (!body.email || !body.password) {
+      return c.json({ msg: "Invalid input data" }, 400);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: body.email,
+        password: body.password,
+      },
+    });
+
+    if (!user) {
+      return c.json({
+        msg: "user not exist",
+      });
+    }
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+    return c.json({
+      jwt: token,
+    });
+  } catch (e) {
+    return c.json(
+      {
+        msg: "error while signin",
+        error: e,
+      },
+      403
+    );
+  }
 });
 
 app.post("/api/v1/blog", (c) => {
@@ -60,9 +113,11 @@ app.post("/api/v1/blog", (c) => {
     id: `${id}`,
   });
 });
+
 app.put("/api/v1/blog/:id", (c) => {
   return c.text("put blog");
 });
+
 app.delete("/api/v1/blog/bulk", (c) => {
   return c.text("delete blog");
 });
