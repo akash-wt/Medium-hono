@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { verify } from "hono/jwt";
 import { Hono } from "hono";
+import { use } from "hono/jsx";
 
 export const blogRouter = new Hono<{
   Bindings: {
@@ -24,7 +25,6 @@ blogRouter.use("/*", async (c, next) => {
     if (user && user.id) {
       // @ts-ignore
       c.set("userId", user.id);
-      console.log(user.id);
 
       await next();
     } else {
@@ -70,19 +70,20 @@ blogRouter.post("/", async (c) => {
   }
 });
 
-
-
-blogRouter.put("/", async (c) => {
+blogRouter.put("/:id", async (c) => {
   try {
+    const postId = c.req.param("id") ;
+    console.log(postId);
+    
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
     const body = await c.req.json();
-    const userId = c.get("userId");
+   
     const updatedBlog = await prisma.post.update({
       where: {
-        id: userId,
+        id: postId ,
       },
 
       data: {
@@ -103,28 +104,6 @@ blogRouter.put("/", async (c) => {
   }
 });
 
-blogRouter.get("/get", async (c) => {
-    try {
-      const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-      }).$extends(withAccelerate());
-  
-      const userId = c.get("userId");
-      const Blog = await prisma.post.findUnique({
-        where: {
-          id: userId,
-        },
-      });
-  
-      return c.json({
-        blog: Blog,
-      });
-    } catch (e) {
-      return c.json({
-        error: e,
-      });
-    }
-  });
 
 blogRouter.get("/bulk", async (c) => {
   try {
@@ -133,14 +112,21 @@ blogRouter.get("/bulk", async (c) => {
     }).$extends(withAccelerate());
 
     const userId = c.get("userId");
-    const bulkBlog = await prisma.post.findMany({
-        where:{
-            authorId:userId
-        }
-    });
+    // const bulkBlog = await prisma.user.findUnique({
+    //      where:{
+    //       id: userId
+    //      },
+    //     include:{
+    //       posts: true
+    //     }
+    // });
+
+    const bulkBlog = await prisma.post.findMany();
+
+    console.log(bulkBlog);
 
     return c.json({
-      blogs: bulkBlog,
+      blogs : bulkBlog,
     });
   } catch (e) {
     return c.json({
@@ -148,3 +134,31 @@ blogRouter.get("/bulk", async (c) => {
     });
   }
 });
+
+
+blogRouter.get("/:id", async (c) => {
+  try {
+    const postId = c.req.param("id") ;
+    console.log(postId);
+
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+   
+    const Blog = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    return c.json({
+      blog: Blog,
+    });
+  } catch (e) {
+    return c.json({
+      error: e,
+    });
+  }
+});
+
