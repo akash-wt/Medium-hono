@@ -141,7 +141,11 @@ blogRouter.get("/bulk", async (c) => {
     //     }
     // });
 
-    const bulkBlog = await prisma.post.findMany();
+    const bulkBlog = await prisma.post.findMany({
+      include: {
+        author: true, 
+      },
+    });
 
     console.log(bulkBlog);
 
