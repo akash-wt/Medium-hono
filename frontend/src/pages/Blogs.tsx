@@ -3,11 +3,8 @@ import Blog from "../components/blog";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import blogsAtom from "../atoms/blogs";
 import axios from "axios";
-// import url from "../config";
+import url from "../config";
 
-import dotenv from 'dotenv';
-dotenv.config();
-const url = process.env.url;
 
 import Loader from "../components/loder";
 

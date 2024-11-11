@@ -4,11 +4,7 @@ import Input from "../components/input";
 import { useState } from "react";
 import { SignupType } from "@akash-wt/medium-types";
 import axios from "axios";
-// import url from "../config";
-import dotenv from 'dotenv';
-dotenv.config();
-const url = process.env.url;
-
+import url from "../config";
 export default function Signup() {
     const nevigate =useNavigate();
   const [signup, setSignup] = useState<SignupType>({
