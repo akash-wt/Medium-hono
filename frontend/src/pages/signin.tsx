@@ -5,16 +5,20 @@ import { useState } from "react";
 import { SignupType } from "@akash-wt/medium-types";
 import axios from "axios";
 import url from "../config";
+import SignLoader from "../components/signLoader"
 
 
 export default function Signin() {
   const nevigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [signin, setSignin] = useState<SignupType>({
     email: "",
     password: "",
   });
+
   const handleSignup = async (): Promise<void> => {
     try {
+      setLoading(true);
       const response = await axios.post(`${url}/user/signin`, signin);
       const jwt = response.data.jwt;
       nevigate("/blogs");
@@ -22,8 +26,12 @@ export default function Signin() {
       localStorage.setItem("token", jwt);
     } catch (e) {
       alert(e);
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   return (
     <div>
@@ -58,13 +66,15 @@ export default function Signin() {
                   placeholder="********"
                 />
               </div>
+              <div>
               <button
-                type="button"
-                onClick={handleSignup}
-                className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-600 focus:z-10 focus:ring-4 focus:ring-gray-100 w-full mt-4"
-              >
-                Login
-              </button>
+                  type="button"
+                  onClick={handleSignup}
+                  className="flex  items-center justify-center  py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-600 focus:z-10 focus:ring-4 focus:ring-gray-100 w-full mt-4"
+                >
+
+                  Login  {loading? <span className=" ml-6"><SignLoader /></span> : null}</button>
+              </div>
             </div>
           </div>
         </div>
