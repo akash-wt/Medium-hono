@@ -4,6 +4,8 @@ const Signup = lazy(() => import("./pages/signup"));
 const Signin = lazy(() => import("./pages/signin"));
 const Blog = lazy(() => import("./pages/blog"));
 const Blogs = lazy(() => import("./pages/Blogs"));
+const New = lazy(() => import("./pages/new"));
+const Edit = lazy(() => import("./pages/edit"));
 import Loader from "./components/loder";
 import Navbar from "./components/Navbar";
 import { RecoilRoot } from "recoil";
@@ -24,6 +26,8 @@ function App() {
             <Route path="/" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/blog/:id" element={<Blog />} />
+            <Route path="/blog/edit/:id" element={<Edit />} />
+            <Route path="/blog/new" element={<New />} />
             <Route path="/blogs" element={<Blogs />} />
           </Routes>
         </Suspense>
