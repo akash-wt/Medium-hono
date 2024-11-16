@@ -1,7 +1,7 @@
 import SignUpQoute from "../components/SignUpQoute";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SignupType } from "@akash-wt/medium-types";
 import axios from "axios";
 import url from "../config";
@@ -16,12 +16,19 @@ export default function Signin() {
     password: "",
   });
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      nevigate("/blogs");
+    }
+  }, [])
+
   const handleSignup = async (): Promise<void> => {
     try {
       setLoading(true);
       localStorage.removeItem("token");
       const response = await axios.post(`${url}/user/signin`, signin);
-      const jwt = response.data.jwt; 
+      const jwt = response.data.jwt;
 
       if (response.data.msg != "user not exist") {
 
@@ -79,10 +86,15 @@ export default function Signin() {
                 <button
                   type="button"
                   onClick={handleSignup}
-                  className="flex  items-center   py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-600 focus:z-10 focus:ring-4 focus:ring-gray-100 w-full mt-4"
+                  className="flex items-center justify-center py-2.5 px-5 me-2 mb-2 text-sm font-medium text-[#ECECEC] focus:outline-none bg-white dark:bg-[#212121] rounded-lg border border-gray-200 dark:border-[#333333] hover:bg-gray-100 dark:hover:bg-[#333333] focus:z-10  w-full mt-4 relative"
                 >
-
-                  <p className="ml-36">Login</p>  {loading ? <span className=" ml-6"><SignLoader /></span> : null}</button>
+                  Signup
+                  {loading && (
+                    <span className="absolute right-6">
+                      <SignLoader />
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
           </div>
