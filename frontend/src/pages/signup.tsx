@@ -21,6 +21,7 @@ export default function Signup() {
     const token = localStorage.getItem("token");
     if (token) {
       nevigate("/blogs");
+      
     }
   }, [])
 

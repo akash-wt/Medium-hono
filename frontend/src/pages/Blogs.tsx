@@ -14,12 +14,18 @@ export default function Blogs() {
   const [loading, setLoading] = useState(true);
   const blogs = useRecoilValue(blogsAtom);
   const nevigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         const token = localStorage.getItem("token");
-       
+
+
+        if (!token) {
+          nevigate("/signup");
+
+        }
+
         const response = await axios.get(`${url}/blog/bulk`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,9 +49,9 @@ export default function Blogs() {
 
   if (loading) {
     return (
-      
-        <BlogsSkelton />
-      
+
+      <BlogsSkelton />
+
     );
   }
 
