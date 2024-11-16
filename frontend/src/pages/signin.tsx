@@ -26,12 +26,14 @@ export default function Signin() {
   const handleSignup = async (): Promise<void> => {
     try {
       setLoading(true);
+
       localStorage.removeItem("token");
       const response = await axios.post(`${url}/user/signin`, signin);
       const jwt = response.data.jwt;
 
       if (response.data.msg != "user not exist") {
 
+        localStorage.setItem("token", jwt);
 
         nevigate("/blogs");
       }
@@ -39,7 +41,6 @@ export default function Signin() {
         alert(response.data.msg);
       }
 
-      localStorage.setItem("token", jwt);
     } catch (e) {
       alert(e);
     } finally {
