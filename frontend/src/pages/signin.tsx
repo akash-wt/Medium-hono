@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import { SignupType } from "@akash-wt/medium-types";
 import axios from "axios";
 import url from "../config";
-import SignLoader from "../components/signLoader"
-
+import SignLoader from "../components/signLoader";
 
 export default function Signin() {
   const nevigate = useNavigate();
@@ -21,7 +20,7 @@ export default function Signin() {
     if (token) {
       nevigate("/blogs");
     }
-  }, [])
+  }, []);
 
   const handleSignup = async (): Promise<void> => {
     try {
@@ -32,23 +31,18 @@ export default function Signin() {
       const jwt = response.data.jwt;
 
       if (response.data.msg != "user not exist") {
-
         localStorage.setItem("token", jwt);
 
         nevigate("/blogs");
-      }
-      else {
+      } else {
         alert(response.data.msg);
       }
-
     } catch (e) {
       alert(e);
     } finally {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div>
