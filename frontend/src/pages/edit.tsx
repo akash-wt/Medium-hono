@@ -5,7 +5,8 @@ import { UpdateBlogType } from "@akash-wt/medium-types";
 import axios from "axios";
 import url from "../config";
 import SignLoader from "../components/signLoader";
-import Textarea from "../components/textarea";
+
+import Textarea from "../components/Textarea";
 
 export default function Edit() {
   const nevigate = useNavigate();
